@@ -1,3 +1,40 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+
+# Godot import files
+.import/
+
+# Exported builds
+*.pck
+*.exe
+*.apk
+*.zip
+
+# Project export configuration
+export_presets.cfg
+export.cfg
+
+# Crash logs
+crash_logs/
+
+# Godot user settings
+*.godot/user_settings-*.cfg
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# VSCode project settings
+.vscode/
+
+# JetBrains IDEs
+.idea/
+
+# Python virtual environments
+venv/
+
+# Mono-specific ignores
+.mono/
+data_*/
