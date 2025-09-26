@@ -46,7 +46,7 @@ polygon = PackedVector2Array(-50, -50, 50, -50, 50, 50, -50, 50)
 [node name="MainScene" type="Node2D"]
 
 [node name="SubtleFog" parent="." instance=ExtResource("4")]
-position = Vector2(640, 360)
+position = Vector2(0, 360)
 
 [node name="CharacterBody2D" parent="." instance=ExtResource("1_d5x1h")]
 position = Vector2(169, 130)
