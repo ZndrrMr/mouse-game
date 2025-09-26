@@ -1,7 +1,13 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=11 format=3 uid="uid://ds817vjugyy33"]
 
-[ext_resource type="Script" path="res://player_controller.gd" id="1"]
-[ext_resource type="Texture2D" uid="uid://light_texture_1" path="res://light_texture.png" id="2"]
+[ext_resource type="Script" uid="uid://d0nkevota2dj5" path="res://player_controller.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://du1xmwftbfbpm" path="res://icon.svg" id="1_gyfs4"]
+[ext_resource type="Texture2D" uid="uid://b6rqrsrixonys" path="res://normalmap.jpg" id="2_d5x1h"]
+[ext_resource type="Shader" path="res://thick_rim_light.gdshader" id="3"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_8mm7a"]
+diffuse_texture = ExtResource("1_gyfs4")
+normal_texture = ExtResource("2_d5x1h")
 
 [sub_resource type="Gradient" id="Gradient_1"]
 offsets = PackedFloat32Array(0, 0.5, 1)
@@ -15,18 +21,31 @@ fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(1, 0.5)
 
-[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_1"]
-polygon = PackedVector2Array(-50, -50, 50, -50, 50, 50, -50, 50)
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(40, 40)
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1"]
+shader = ExtResource("3")
+shader_parameter/rim_color = Color(1.0, 0.8, 0.4, 1.0)
+shader_parameter/rim_thickness = 40.0
+shader_parameter/rim_intensity = 2.5
+shader_parameter/rim_fade = 1.2
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_1"]
+polygon = PackedVector2Array(-50, -50, 50, -50, 50, 50, -50, 50)
+
 [node name="MainScene" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(419, 161)
+texture = SubResource("CanvasTexture_8mm7a")
+offset = Vector2(300.09, 0)
 
 [node name="CanvasModulate" type="CanvasModulate" parent="."]
 color = Color(0.15, 0.15, 0.2, 1)
 
 [node name="Player" type="CharacterBody2D" parent="."]
+visible = false
 position = Vector2(512, 300)
 script = ExtResource("1")
 
@@ -48,7 +67,7 @@ shape = SubResource("RectangleShape2D_1")
 [node name="Environment" type="Node2D" parent="."]
 
 [node name="Torch1" type="PointLight2D" parent="Environment"]
-position = Vector2(200, 200)
+position = Vector2(196, 192)
 color = Color(1, 0.6, 0.3, 1)
 energy = 0.8
 shadow_enabled = true
@@ -77,6 +96,7 @@ color = Color(0.3, 0.6, 1, 1)
 energy = 1.2
 shadow_enabled = true
 texture = SubResource("GradientTexture2D_1")
+offset = Vector2(300.9, 150)
 texture_scale = 1.8
 
 [node name="Walls" type="Node2D" parent="."]
@@ -85,11 +105,18 @@ texture_scale = 1.8
 position = Vector2(100, 300)
 
 [node name="ColorRect" type="ColorRect" parent="Walls/Wall1"]
+material = SubResource("ShaderMaterial_1")
 offset_left = -50.0
 offset_top = -50.0
 offset_right = 50.0
 offset_bottom = 50.0
 color = Color(0.3, 0.3, 0.3, 1)
+
+[node name="RimGlow" type="Polygon2D" parent="Walls/Wall1"]
+z_index = -1
+material = SubResource("ShaderMaterial_1")
+color = Color(0.3, 0.3, 0.3, 1)
+polygon = PackedVector2Array(-50, -50, 50, -50, 50, 50, -50, 50)
 
 [node name="LightOccluder2D" type="LightOccluder2D" parent="Walls/Wall1"]
 occluder = SubResource("OccluderPolygon2D_1")
@@ -101,11 +128,18 @@ polygon = PackedVector2Array(-50, -50, 50, -50, 50, 50, -50, 50)
 position = Vector2(400, 400)
 
 [node name="ColorRect" type="ColorRect" parent="Walls/Wall2"]
+material = SubResource("ShaderMaterial_1")
 offset_left = -50.0
 offset_top = -50.0
 offset_right = 50.0
 offset_bottom = 50.0
 color = Color(0.3, 0.3, 0.3, 1)
+
+[node name="RimGlow" type="Polygon2D" parent="Walls/Wall2"]
+z_index = -1
+material = SubResource("ShaderMaterial_1")
+color = Color(0.3, 0.3, 0.3, 1)
+polygon = PackedVector2Array(-50, -50, 50, -50, 50, 50, -50, 50)
 
 [node name="LightOccluder2D" type="LightOccluder2D" parent="Walls/Wall2"]
 occluder = SubResource("OccluderPolygon2D_1")
@@ -117,11 +151,18 @@ polygon = PackedVector2Array(-50, -50, 50, -50, 50, 50, -50, 50)
 position = Vector2(700, 350)
 
 [node name="ColorRect" type="ColorRect" parent="Walls/Wall3"]
+material = SubResource("ShaderMaterial_1")
 offset_left = -50.0
 offset_top = -50.0
 offset_right = 50.0
 offset_bottom = 50.0
 color = Color(0.3, 0.3, 0.3, 1)
+
+[node name="RimGlow" type="Polygon2D" parent="Walls/Wall3"]
+z_index = -1
+material = SubResource("ShaderMaterial_1")
+color = Color(0.3, 0.3, 0.3, 1)
+polygon = PackedVector2Array(-50, -50, 50, -50, 50, 50, -50, 50)
 
 [node name="LightOccluder2D" type="LightOccluder2D" parent="Walls/Wall3"]
 occluder = SubResource("OccluderPolygon2D_1")
@@ -132,7 +173,7 @@ polygon = PackedVector2Array(-50, -50, 50, -50, 50, 50, -50, 50)
 [node name="Floor" type="Node2D" parent="."]
 
 [node name="ColorRect" type="ColorRect" parent="Floor"]
+z_index = -1
 offset_right = 1024.0
 offset_bottom = 600.0
 color = Color(0.1, 0.1, 0.1, 1)
-z_index = -1
