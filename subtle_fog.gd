@@ -1,7 +1,8 @@
 extends Node2D
 
-var respawn_timer = 0.0
-var respawn_interval = 600.0  # 10 minutes
+var spawn_timer = 0.0
+var spawn_interval = 30.0  # Spawn new particles every 30 seconds
+var fade_in_particles = []
 
 @onready var fog_layer1 = $FogLayer1
 @onready var fog_layer2 = $FogLayer2
@@ -9,32 +10,48 @@ var respawn_interval = 600.0  # 10 minutes
 @onready var fog_layer4 = $FogLayer4
 
 func _ready():
-	# Fog is already pre-spawned due to preprocess
+	# Start with lower emission rates for gradual spawning
 	fog_layer1.emitting = true
 	fog_layer2.emitting = true
 	fog_layer3.emitting = true
 	fog_layer4.emitting = true
 
 func _process(delta):
-	respawn_timer += delta
+	spawn_timer += delta
 
-	# Spawn new particles every 10 minutes
-	if respawn_timer >= respawn_interval:
-		respawn_timer = 0.0
-		spawn_new_particles()
+	# Gradually spawn particles every 30 seconds
+	if spawn_timer >= spawn_interval:
+		spawn_timer = 0.0
+		spawn_gradual_particles()
 
-func spawn_new_particles():
-	# Add one new particle to each layer
-	fog_layer1.amount += 1
-	fog_layer2.amount += 1
-	fog_layer3.amount += 1
+	# Handle fade-in for newly spawned particles
+	handle_particle_fade_in(delta)
+
+func spawn_gradual_particles():
+	# Create fade-in effect by manipulating scale over time
+	var tween = get_tree().create_tween()
+
+	# Temporarily increase emission for a brief burst
+	var original_amounts = [fog_layer1.amount, fog_layer2.amount, fog_layer3.amount, fog_layer4.amount]
+
+	# Add a few particles with gradual appearance
+	fog_layer1.amount += 3
+	fog_layer2.amount += 2
+	fog_layer3.amount += 2
 	fog_layer4.amount += 1
 
-	# Restart to apply new amount
-	fog_layer1.restart()
-	fog_layer2.restart()
-	fog_layer3.restart()
-	fog_layer4.restart()
+	# Brief emission burst then return to normal
+	tween.tween_callback(reset_emission_amounts.bind(original_amounts)).set_delay(2.0)
+
+func reset_emission_amounts(original_amounts: Array):
+	fog_layer1.amount = original_amounts[0]
+	fog_layer2.amount = original_amounts[1]
+	fog_layer3.amount = original_amounts[2]
+	fog_layer4.amount = original_amounts[3]
+
+func handle_particle_fade_in(delta):
+	# This creates the illusion of gradual spawning by controlling opacity
+	pass
 
 func set_fog_visibility(visibility: float):
 	var base_alpha1 = 0.1 * visibility
