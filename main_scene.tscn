@@ -1,9 +1,10 @@
-[gd_scene load_steps=12 format=4 uid="uid://ds817vjugyy33"]
+[gd_scene load_steps=13 format=4 uid="uid://ds817vjugyy33"]
 
 [ext_resource type="PackedScene" uid="uid://ckm5ua4jm6ukm" path="res://Player/player.tscn" id="1_d5x1h"]
 [ext_resource type="Texture2D" uid="uid://du1xmwftbfbpm" path="res://icon.svg" id="1_gyfs4"]
 [ext_resource type="Texture2D" uid="uid://b6rqrsrixonys" path="res://normalmap.jpg" id="2_d5x1h"]
 [ext_resource type="Shader" uid="uid://lfwy8aqvln0r" path="res://thick_rim_light.gdshader" id="3"]
+[ext_resource type="PackedScene" path="res://subtle_fog.tscn" id="4"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_d5x1h"]
 texture = ExtResource("1_gyfs4")
@@ -43,6 +44,9 @@ shader_parameter/rim_fade = 1.2
 polygon = PackedVector2Array(-50, -50, 50, -50, 50, 50, -50, 50)
 
 [node name="MainScene" type="Node2D"]
+
+[node name="SubtleFog" parent="." instance=ExtResource("4")]
+position = Vector2(640, 360)
 
 [node name="CharacterBody2D" parent="." instance=ExtResource("1_d5x1h")]
 position = Vector2(169, 130)
