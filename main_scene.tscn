@@ -50,7 +50,7 @@ polygon = PackedVector2Array(-50, -50, 50, -50, 50, 50, -50, 50)
 position = Vector2(322, 255)
 
 [node name="FogBar2" parent="." instance=ExtResource("5")]
-position = Vector2(322, 400)
+position = Vector2(326, 513)
 
 [node name="CharacterBody2D" parent="." instance=ExtResource("1_d5x1h")]
 position = Vector2(169, 130)
