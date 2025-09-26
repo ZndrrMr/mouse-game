@@ -18,7 +18,7 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_i3pqv"]
 size = Vector2(18, 36)
 
-[node name="CharacterBody2D" type="CharacterBody2D"]
+[node name="CharacterBody2D" type="CharacterBody2D" groups=["player"]]
 script = ExtResource("1_4ntmi")
 
 [node name="AnimatedSprite2D2" type="AnimatedSprite2D" parent="."]
@@ -33,3 +33,9 @@ shape = SubResource("RectangleShape2D_i3pqv")
 position = Vector2(0, -2)
 scale = Vector2(0.140625, 0.28125)
 texture = ExtResource("1_4flbx")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+enabled = true
+zoom = Vector2(0.3, 0.3)
+position_smoothing_enabled = true
+position_smoothing_speed = 5.0

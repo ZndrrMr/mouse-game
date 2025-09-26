@@ -1,19 +1,23 @@
 extends CharacterBody2D
 
 # Constants
-const SPEED_GROUND = 2160.0
-const FRIC_GROUND = 2400.0
-const SPEED_AIR = 1800.0
-const FRIC_AIR = 800.0
+const SPEED_GROUND = 3600.0
+const FRIC_GROUND = 3200.0
+const SPEED_AIR = 3000.0
+const FRIC_AIR = 1000.0
 
-const JUMP_VELOCITY = -200.0
-const GRAVITY_SLOW = 600
-const GRAVITY_FAST = 1100
+const JUMP_VELOCITY = -450.0
+const GRAVITY_SLOW = 1200
+const GRAVITY_FAST = 2200
 const COYOTE_TIME_DUR = 0.1
 const JUMP_BUFFER_DUR = 0.1
 
-const MAX_SPEED = 90
+const MAX_SPEED = 150
 const MAX_FALL = 420
+
+const RECOIL_VELOCITY = 120.0  # Velocity-based recoil instead of position
+const EXPLOSION_SCENE = preload("res://explosion.tscn")
+const MUZZLE_BLAST_SCENE = preload("res://muzzle_blast.tscn")
 
 # setup variables
 var coyote_time_timer: float = 0
@@ -52,12 +56,15 @@ func _physics_process(delta: float) -> void:
 		coyote_time_timer -= delta
 	if jump_buffer_timer > 0:
 		jump_buffer_timer -= delta
-	
+
 	_get_inputs()
-	
+
+	if shoot_press:
+		_handle_shoot()
+
 	if state:
 		state.update(delta)
-	
+
 	move_and_slide()
 
 func change_state(new_state: PlayerStates) -> void:
@@ -69,7 +76,7 @@ func _get_inputs():
 	up_hold = Input.is_action_pressed("Up")
 	jump_hold = Input.is_action_pressed("Jump")
 	jump_press = Input.is_action_just_pressed("Jump")
-	shoot_press = Input.is_action_just_pressed("Shoot")
+	shoot_press = Input.is_action_just_pressed("shoot")
 
 func _state_free(delta: float) -> void:
 	# JUMP
@@ -108,3 +115,40 @@ func _state_free(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, 0, friction * delta)
 		if abs(velocity.x) < 1:
 			velocity.x = 0
+
+func _handle_shoot() -> void:
+	var mouse_pos = get_global_mouse_position()
+	var player_pos = global_position
+	var direction = (mouse_pos - player_pos).normalized()
+
+	# Extend the ray far beyond the mouse position (e.g., 2000 pixels)
+	var ray_end = player_pos + direction * 2000.0
+
+	var space_state = get_world_2d().direct_space_state
+	var query = PhysicsRayQueryParameters2D.create(player_pos, ray_end)
+	query.exclude = [self]
+	var result = space_state.intersect_ray(query)
+
+	# Only create explosion if we hit something
+	if result:
+		var explosion = EXPLOSION_SCENE.instantiate()
+		get_parent().add_child(explosion)
+		explosion.global_position = result.position
+
+	# Create muzzle blast at player position
+	var muzzle_blast = MUZZLE_BLAST_SCENE.instantiate()
+	get_parent().add_child(muzzle_blast)
+
+	# Position and rotate muzzle blast based on mouse direction
+	if mouse_pos.x > player_pos.x:
+		# Mouse is to the right, place blast to the right pointing right
+		muzzle_blast.global_position = player_pos + Vector2(16, 0)
+		muzzle_blast.rotation_degrees = 0
+	else:
+		# Mouse is to the left, place blast to the left pointing left
+		muzzle_blast.global_position = player_pos + Vector2(-16, 0)
+		muzzle_blast.rotation_degrees = 180
+
+	# Apply recoil as velocity in opposite direction of shot
+	velocity.x -= direction.x * RECOIL_VELOCITY
+	velocity.y -= direction.y * RECOIL_VELOCITY

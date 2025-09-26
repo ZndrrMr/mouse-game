@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=4 uid="uid://ds817vjugyy33"]
+[gd_scene load_steps=17 format=4 uid="uid://ds817vjugyy33"]
 
 [ext_resource type="PackedScene" uid="uid://ckm5ua4jm6ukm" path="res://Player/player.tscn" id="1_d5x1h"]
 [ext_resource type="Texture2D" uid="uid://du1xmwftbfbpm" path="res://icon.svg" id="1_gyfs4"]
@@ -6,6 +6,13 @@
 [ext_resource type="Shader" uid="uid://lfwy8aqvln0r" path="res://thick_rim_light.gdshader" id="3"]
 [ext_resource type="PackedScene" path="res://subtle_fog.tscn" id="4"]
 [ext_resource type="PackedScene" path="res://fog_bar_2.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://snake_enemy.tscn" id="6"]
+[ext_resource type="PackedScene" path="res://cheese.tscn" id="8"]
+
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_1"]
+vertices = PackedVector2Array(-1000, -1000, 2000, -1000, 2000, 1000, -1000, 1000)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(-1000, -1000, 2000, -1000, 2000, 1000, -1000, 1000)])
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_d5x1h"]
 texture = ExtResource("1_gyfs4")
@@ -55,7 +62,10 @@ position = Vector2(326, 513)
 [node name="CharacterBody2D" parent="." instance=ExtResource("1_d5x1h")]
 position = Vector2(169, 130)
 
-[node name="TileMapLayer" type="TileMapLayer" parent="."]
+[node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
+navigation_polygon = SubResource("NavigationPolygon_1")
+
+[node name="TileMapLayer" type="TileMapLayer" parent="NavigationRegion2D"]
 tile_map_data = PackedByteArray("AAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAIAAAAAAAAAAAABAAIAAAAAAAAAAAACAAIAAAAAAAAAAAADAAIAAAAAAAAAAAACAAAAAAAAAAAAAAADAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAFAAAAAAAAAAAAAAAFAAEAAAAAAAAAAAAFAAIAAAAAAAAAAAAFAAMAAAAAAAAAAAAFAAQAAAAAAAAAAAAEAAQAAAAAAAAAAAADAAQAAAAAAAAAAAACAAQAAAAAAAAAAAA=")
 tile_set = SubResource("TileSet_8mm7a")
 
@@ -175,6 +185,12 @@ occluder = SubResource("OccluderPolygon2D_1")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Walls/Wall3"]
 polygon = PackedVector2Array(-50, -50, 50, -50, 50, 50, -50, 50)
+
+[node name="SnakeEnemy" parent="." instance=ExtResource("6")]
+position = Vector2(448, 448)
+
+[node name="Cheese" parent="." instance=ExtResource("8")]
+position = Vector2(408, 252)
 
 [node name="Floor" type="Node2D" parent="."]
 visible = false

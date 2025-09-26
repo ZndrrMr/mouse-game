@@ -1,0 +1,36 @@
+[gd_scene load_steps=4 format=3 uid="uid://bxpl5k7q8xmnd"]
+
+[ext_resource type="Script" path="res://explosion.gd" id="1_0xmnd"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1"]
+radius = 30.0
+
+[sub_resource type="Gradient" id="Gradient_1"]
+colors = PackedColorArray(1, 0.8, 0, 1, 1, 0.4, 0, 1)
+
+[node name="Explosion" type="Area2D"]
+script = ExtResource("1_0xmnd")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_1")
+
+[node name="CPUParticles2D" type="CPUParticles2D" parent="."]
+emitting = true
+amount = 50
+lifetime = 0.5
+one_shot = true
+speed_scale = 2.0
+emission_shape = 1
+emission_sphere_radius = 5.0
+initial_velocity_min = 100.0
+initial_velocity_max = 200.0
+scale_amount_min = 2.0
+scale_amount_max = 4.0
+color_ramp = SubResource("Gradient_1")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+autostart = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
