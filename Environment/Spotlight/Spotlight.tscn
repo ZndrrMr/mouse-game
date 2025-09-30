@@ -1,0 +1,47 @@
+[gd_scene load_steps=8 format=3 uid="uid://t46cgnpmk53e"]
+
+[ext_resource type="Texture2D" uid="uid://drqo3ksi2v5h6" path="res://Environment/Spotlight/Spotlight.png" id="1_nq410"]
+[ext_resource type="Texture2D" uid="uid://b6ero85lalnm2" path="res://Environment/Spotlight/LightHead.png" id="2_5ic3e"]
+[ext_resource type="Texture2D" uid="uid://b73wm66t53wrw" path="res://Environment/Spotlight/LightHeadUnshaded.png" id="3_lr6je"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_nq410"]
+light_mode = 1
+
+[sub_resource type="Gradient" id="Gradient_nq410"]
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_5ic3e"]
+gradient = SubResource("Gradient_nq410")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_xapql"]
+light_mode = 1
+
+[node name="Spotlight" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+material = SubResource("CanvasItemMaterial_nq410")
+position = Vector2(0, -1)
+texture = ExtResource("2_5ic3e")
+
+[node name="Lights" type="Node2D" parent="."]
+
+[node name="PointLight2D2" type="PointLight2D" parent="Lights"]
+position = Vector2(-2.86102e-06, -5)
+scale = Vector2(2, 0.625)
+color = Color(0.611797, 0.131354, 0.992408, 1)
+energy = 1.57
+texture = SubResource("GradientTexture2D_5ic3e")
+
+[node name="Sprite2D2" type="Sprite2D" parent="Lights"]
+material = SubResource("CanvasItemMaterial_xapql")
+position = Vector2(0, -1)
+texture = ExtResource("3_lr6je")
+
+[node name="PointLight2D" type="PointLight2D" parent="Lights"]
+position = Vector2(0, 89)
+color = Color(0.882353, 0.839216, 1, 1)
+energy = 0.8
+texture = ExtResource("1_nq410")

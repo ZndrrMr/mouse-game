@@ -1,0 +1,26 @@
+[gd_scene load_steps=4 format=3 uid="uid://coqgcyd453sjn"]
+
+[sub_resource type="Gradient" id="Gradient_x1mwn"]
+offsets = PackedFloat32Array(0.564935, 0.694805, 0.837662)
+colors = PackedColorArray(0.662254, 0.522267, 0, 0, 1, 0.858868, 0.396282, 0.878431, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_6jojl"]
+gradient = SubResource("Gradient_x1mwn")
+
+[sub_resource type="Gradient" id="Gradient_66hfq"]
+offsets = PackedFloat32Array(0.113333, 0.666667, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.999999, 0.890034, 0.610881, 0.854902, 0.47451, 0.270588, 0.196078, 0)
+
+[node name="CPUParticles2D" type="CPUParticles2D"]
+emitting = false
+amount = 5
+texture = SubResource("GradientTexture1D_6jojl")
+lifetime = 0.15
+one_shot = true
+explosiveness = 1.0
+gravity = Vector2(0, 0)
+linear_accel_max = 30.3
+angle_min = -20.0
+angle_max = 20.0
+color_ramp = SubResource("Gradient_66hfq")
+anim_speed_max = 51.72

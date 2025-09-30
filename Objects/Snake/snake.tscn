@@ -1,0 +1,96 @@
+[gd_scene load_steps=15 format=3 uid="uid://wndlg7dheof2"]
+
+[ext_resource type="Script" uid="uid://cdldpnqivvao5" path="res://Objects/Snake/snake.gd" id="1_yasvg"]
+[ext_resource type="Texture2D" uid="uid://dbvvbfq21yu7i" path="res://Objects/Snake/SnakeAnims/SnakeHead.png" id="2_3ngyr"]
+[ext_resource type="AudioStream" uid="uid://cy1elpbljerf7" path="res://Objects/Snake/Snake.wav" id="3_tebml"]
+[ext_resource type="AudioStream" uid="uid://bk5s7nh1tutjh" path="res://Objects/Snake/Sniff.wav" id="4_00mgp"]
+[ext_resource type="AudioStream" uid="uid://cn028sang3aql" path="res://Objects/Snake/hiss3-103123.mp3" id="5_wqold"]
+[ext_resource type="AudioStream" uid="uid://cfsgmeekk56px" path="res://Objects/Snake/Snort.wav" id="6_2s1gs"]
+[ext_resource type="AudioStream" uid="uid://b71lf1kpm24x2" path="res://Objects/Snake/jump-scare-sound-2-82831.mp3" id="7_6umul"]
+[ext_resource type="AudioStream" uid="uid://mul82wl8ood8" path="res://Objects/Player/heartbeat-01-brvhrtz-225058.mp3" id="8_aatry"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tebml"]
+atlas = ExtResource("2_3ngyr")
+region = Rect2(0, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_00mgp"]
+atlas = ExtResource("2_3ngyr")
+region = Rect2(160, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wqold"]
+atlas = ExtResource("2_3ngyr")
+region = Rect2(320, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2s1gs"]
+atlas = ExtResource("2_3ngyr")
+region = Rect2(480, 0, 160, 160)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_chslv"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tebml")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_00mgp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wqold")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2s1gs")
+}],
+"loop": true,
+"name": &"new_animation",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3ngyr"]
+size = Vector2(112, 112)
+
+[node name="Snake" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_yasvg")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_chslv")
+animation = &"new_animation"
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("RectangleShape2D_3ngyr")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_3ngyr")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_tebml")
+volume_db = -15.0
+max_distance = 1000.0
+
+[node name="Sniff" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("4_00mgp")
+max_distance = 1000.0
+
+[node name="Hiss" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("5_wqold")
+volume_db = 20.0
+max_distance = 1000.0
+
+[node name="Snort" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("6_2s1gs")
+volume_db = 5.0
+max_distance = 1000.0
+
+[node name="Kill" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("7_6umul")
+
+[node name="Heartbeat" type="AudioStreamPlayer2D" parent="." groups=["Loops"]]
+stream = ExtResource("8_aatry")
+volume_db = 10.0
+max_distance = 800.0
+panning_strength = 0.0
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]

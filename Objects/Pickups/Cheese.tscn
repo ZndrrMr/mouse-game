@@ -1,0 +1,28 @@
+[gd_scene load_steps=6 format=3 uid="uid://bf72evb4e7rk3"]
+
+[ext_resource type="Texture2D" uid="uid://dg6xxjqp26350" path="res://Objects/Pickups/cheese (2).png" id="1_4dupg"]
+[ext_resource type="Script" uid="uid://gpvjgjeglmir" path="res://Objects/Pickups/cheese.gd" id="1_e3uv2"]
+[ext_resource type="AudioStream" uid="uid://ywg1jua52ncm" path="res://Objects/Pickups/Cheese.wav" id="3_gh1k8"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_e3uv2"]
+size = Vector2(20, 21)
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_e3uv2"]
+light_mode = 1
+
+[node name="Cheese" type="Area2D"]
+script = ExtResource("1_e3uv2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -0.5)
+shape = SubResource("RectangleShape2D_e3uv2")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+material = SubResource("CanvasItemMaterial_e3uv2")
+texture = ExtResource("1_4dupg")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_gh1k8")
+volume_db = 10.0
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

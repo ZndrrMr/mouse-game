@@ -1,0 +1,28 @@
+[gd_scene load_steps=5 format=3 uid="uid://bb3rk8qdihdnl"]
+
+[ext_resource type="Script" uid="uid://b6fkp4ssfiqog" path="res://win_area.gd" id="1_gbuwc"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qoo44"]
+size = Vector2(128, 8)
+
+[sub_resource type="Gradient" id="Gradient_gbuwc"]
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_1vnui"]
+gradient = SubResource("Gradient_gbuwc")
+fill_to = Vector2(0, 1)
+
+[node name="WinArea" type="Area2D"]
+script = ExtResource("1_gbuwc")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 4)
+shape = SubResource("RectangleShape2D_qoo44")
+
+[node name="PointLight2D" type="PointLight2D" parent="."]
+position = Vector2(-1.90735e-06, 224)
+scale = Vector2(2, 7)
+color = Color(0.923818, 0.86706, 0.737344, 1)
+texture = SubResource("GradientTexture2D_1vnui")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

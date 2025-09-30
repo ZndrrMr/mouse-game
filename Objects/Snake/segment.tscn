@@ -1,0 +1,135 @@
+[gd_scene load_steps=21 format=3 uid="uid://5htvndhh7n6p"]
+
+[ext_resource type="Texture2D" uid="uid://dru4kxdtahaqh" path="res://Objects/Snake/SnakeAnims/SnakeBody.png" id="1_bj4m8"]
+[ext_resource type="Script" uid="uid://cnesnn247f2bd" path="res://Objects/Snake/segment.gd" id="1_cxgf4"]
+[ext_resource type="Texture2D" uid="uid://c8nbiwc6hmj2b" path="res://Objects/Snake/SnakeAnims/SnakeTail.png" id="2_lkoxr"]
+[ext_resource type="Texture2D" uid="uid://b6g5bi2bydbu8" path="res://Objects/Snake/SnakeAnims/SnakeTail2.png" id="3_lkoxr"]
+[ext_resource type="AudioStream" uid="uid://b71lf1kpm24x2" path="res://Objects/Snake/jump-scare-sound-2-82831.mp3" id="5_uonix"]
+[ext_resource type="AudioStream" uid="uid://cy1elpbljerf7" path="res://Objects/Snake/Snake.wav" id="6_5mqiq"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cxgf4"]
+atlas = ExtResource("1_bj4m8")
+region = Rect2(0, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uonix"]
+atlas = ExtResource("1_bj4m8")
+region = Rect2(160, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5mqiq"]
+atlas = ExtResource("1_bj4m8")
+region = Rect2(320, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ha748"]
+atlas = ExtResource("1_bj4m8")
+region = Rect2(480, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8qf31"]
+atlas = ExtResource("2_lkoxr")
+region = Rect2(0, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jrvoj"]
+atlas = ExtResource("2_lkoxr")
+region = Rect2(160, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r58fc"]
+atlas = ExtResource("2_lkoxr")
+region = Rect2(320, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7l61b"]
+atlas = ExtResource("2_lkoxr")
+region = Rect2(480, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uthy8"]
+atlas = ExtResource("3_lkoxr")
+region = Rect2(0, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_opc84"]
+atlas = ExtResource("3_lkoxr")
+region = Rect2(160, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x35fx"]
+atlas = ExtResource("3_lkoxr")
+region = Rect2(320, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_08mdq"]
+atlas = ExtResource("3_lkoxr")
+region = Rect2(480, 0, 160, 160)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_hjdl8"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cxgf4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uonix")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5mqiq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ha748")
+}],
+"loop": true,
+"name": &"Body",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8qf31")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jrvoj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r58fc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7l61b")
+}],
+"loop": true,
+"name": &"Tail",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uthy8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_opc84")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x35fx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_08mdq")
+}],
+"loop": true,
+"name": &"Tail2",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lkoxr"]
+size = Vector2(112, 112)
+
+[node name="Segment" type="Node2D"]
+script = ExtResource("1_cxgf4")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_hjdl8")
+animation = &"Tail"
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("RectangleShape2D_lkoxr")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_uonix")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("6_5mqiq")
+volume_db = -15.0
+max_distance = 700.0
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]

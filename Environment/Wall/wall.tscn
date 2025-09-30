@@ -1,0 +1,22 @@
+[gd_scene load_steps=5 format=3 uid="uid://lxtwab4x74je"]
+
+[ext_resource type="Script" uid="uid://bxc8drsw0trsg" path="res://Environment/Wall/wall.gd" id="1_jt7bp"]
+[ext_resource type="Texture2D" uid="uid://bj2uyp62bi6df" path="res://Environment/Wall/Wood.png" id="2_wsnmh"]
+[ext_resource type="AudioStream" uid="uid://c1kxxak4mdbxp" path="res://Environment/Wall/WoodBreak.wav" id="3_f4hwk"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_y4f30"]
+size = Vector2(25, 128)
+
+[node name="StaticBody2D" type="StaticBody2D"]
+collision_mask = 3
+script = ExtResource("1_jt7bp")
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+texture = ExtResource("2_wsnmh")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-0.5, 0)
+shape = SubResource("RectangleShape2D_y4f30")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_f4hwk")
