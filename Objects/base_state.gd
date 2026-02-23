@@ -3,8 +3,8 @@ class_name State
 
 var host
 
-func update(delta): pass
+func update(_delta): pass
 
-func init(host):
-	self.host = host
+func init(my_host):
+	host = my_host
 	return self

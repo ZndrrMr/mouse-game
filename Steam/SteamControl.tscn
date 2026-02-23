@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bf83qbnk7mndu"]
+
+[ext_resource type="Script" uid="uid://dcblqx0o62efc" path="res://Steam/steam_control.gd" id="1_usqwc"]
+
+[node name="SteamControl" type="Node2D"]
+script = ExtResource("1_usqwc")

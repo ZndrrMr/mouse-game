@@ -1,0 +1,27 @@
+[gd_scene load_steps=4 format=3 uid="uid://2mo88gjseh4k"]
+
+[sub_resource type="Gradient" id="Gradient_y7yuf"]
+interpolation_mode = 2
+offsets = PackedFloat32Array(0.198502, 1)
+colors = PackedColorArray(0.91, 0.91, 0.91, 0.0980392, 1, 1, 1, 0.0980392)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_lxjss"]
+gradient = SubResource("Gradient_y7yuf")
+width = 512
+height = 480
+fill = 1
+fill_from = Vector2(0.538462, 0.482906)
+fill_to = Vector2(0.538462, 0)
+
+[sub_resource type="Curve" id="Curve_sfsq6"]
+_data = [Vector2(0, 1), 0.0, 0.725661, 0, 0, Vector2(1, 0.696176), -1.60541, 0.0, 0, 0]
+point_count = 2
+
+[node name="BulletFlash" type="CPUParticles2D"]
+emitting = false
+amount = 1
+texture = SubResource("GradientTexture2D_lxjss")
+lifetime = 0.05
+one_shot = true
+gravity = Vector2(0, 0)
+scale_amount_curve = SubResource("Curve_sfsq6")

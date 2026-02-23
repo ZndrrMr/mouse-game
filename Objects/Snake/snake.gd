@@ -5,6 +5,7 @@ extends CharacterBody2D
 var segments: Array[Node2D] = []
 var segment_targets: Array[Vector2i] = []
 
+var all_distance_maps : Dictionary = {}
 var distance_map : Dictionary = {}
 var short_target : Vector2i
 var long_target : Vector2i
@@ -17,10 +18,11 @@ const STUN_DUR : float = 3
 
 var rng = RandomNumberGenerator.new()
 @onready var maze: TileMapLayer = $"../TileMapLayer"
-var empty_tiles = []
+var empty_tiles : Array[Vector2i] = []
+
+var still : bool = false
 
 enum SnakeStates {
-	CINEMATIC,
 	CHASE,
 	PATROL,
 	KILL,
@@ -28,7 +30,6 @@ enum SnakeStates {
 	SMELL
 }
 var state_map = {
-	SnakeStates.CINEMATIC: Player_State_Free.new().init(self),
 	SnakeStates.CHASE: Snake_State_Chase.new().init(self),
 	SnakeStates.PATROL: Snake_State_Patrol.new().init(self),
 	SnakeStates.KILL: Snake_State_Kill.new().init(self),
@@ -40,6 +41,8 @@ var state: State = null
 func _ready() -> void:
 	rng.randomize()
 	get_empty_tiles()
+	all_distance_maps = gen_distance_maps(empty_tiles)
+	remove_wall_tiles()
 	set_patrol_target()
 	create_segments()
 	pick_next_tile()
@@ -49,10 +52,13 @@ func _ready() -> void:
 	$AudioStreamPlayer2D.play()
 	$Heartbeat.play()
 
-func _physics_process(delta: float) -> void:
+func _process(delta: float) -> void:
 	if state:
 		state.update(delta)
-	$AudioStreamPlayer2D.stream_paused = velocity.length() <= 0
+	
+	if still != (velocity == Vector2.ZERO):
+		still = velocity == Vector2.ZERO
+		$AudioStreamPlayer2D.stream_paused = still
 
 func change_state(new_state: SnakeStates) -> void:
 	state = state_map[new_state]
@@ -132,7 +138,8 @@ func get_empty_tiles():
 			var tile_pos = Vector2i(x + rect.position.x, y + rect.position.y)
 			if maze.get_cell_source_id(tile_pos) == -1:
 				empty_tiles.append(tile_pos)
-	
+
+func remove_wall_tiles():
 	for wall in $"../Walls".get_children():
 		empty_tiles.erase(global_to_tile(wall.global_position))
 
@@ -148,7 +155,7 @@ func move_segment(index: int, speed: float, delta: float) -> void:
 	if distance.length() < speed * delta:
 		seg.global_position = tile_to_global(target)
 	else:
-		seg.global_position += seg_vel * delta 
+		seg.global_position += seg_vel * delta
 
 func move(speed: float, delta: float) -> void:
 	var distance : Vector2 = tile_to_global(short_target) - global_position
@@ -166,10 +173,10 @@ func move(speed: float, delta: float) -> void:
 		
 		if long_target == short_target:
 			set_patrol_target()
-		else:
-			pick_next_tile()
+		#else:
+		pick_next_tile()
 	
-	move_and_slide()
+	global_position += velocity * delta
 	update_segments(speed, delta)
 
 func set_patrol_target() -> void:
@@ -179,9 +186,10 @@ func set_patrol_target() -> void:
 	else:
 		set_target(global_to_tile($"../Player".global_position))
 
-func set_target(target: Vector2):
+func set_target(target: Vector2i):
 	long_target = target
-	distance_map = flood_fill_towards(target)
+	#distance_map = flood_fill_towards(target)
+	distance_map = all_distance_maps[target]
 
 func pick_next_tile() -> void:
 	var current : Vector2i = global_to_tile(global_position)
@@ -203,7 +211,7 @@ func best_neighbor(current: Vector2i) -> Vector2i:
 		print("THIS IS WRONG!!")
 		print(rng.get_seed())
 		return Vector2i.ZERO
-	var best_neighbor := current
+	var best_neighbor_loc := current
 	var best_dist = distance_map[current]
 	
 	var neighbors = [
@@ -216,9 +224,9 @@ func best_neighbor(current: Vector2i) -> Vector2i:
 	for n in neighbors:
 		if distance_map.has(n) and distance_map[n] < best_dist:
 			best_dist = distance_map[n]
-			best_neighbor = n
+			best_neighbor_loc = n
 	
-	return best_neighbor
+	return best_neighbor_loc
 
 func pick_next_dir(prev: Vector2i, current: Vector2i) -> int:
 	var delta_tile: Vector2i = current - prev
@@ -253,6 +261,7 @@ func flood_fill_towards(target: Vector2i) -> Dictionary:
 	
 	while queue.size() > 0:
 		var current = queue.pop_front()
+		
 		var neighbors = [
 			current + Vector2i.LEFT,
 			current + Vector2i.RIGHT,
@@ -263,11 +272,18 @@ func flood_fill_towards(target: Vector2i) -> Dictionary:
 			if empty_tiles.has(n) and not dist.has(n): # walkable
 				dist[n] = dist[current] + 1
 				queue.append(n)
+		
 	return dist
+
+func gen_distance_maps(targets: Array[Vector2i]) -> Dictionary:
+	var out: Dictionary = {}
+	for target in targets:
+		out[target] = flood_fill_towards(target)
+	return out
 
 func player_caught():
 	# Stop all movement/input
-	set_physics_process(false)
+	set_process(false)
 	$"../Player".set_physics_process(false)
 
 	# Spawn jump scare overlay

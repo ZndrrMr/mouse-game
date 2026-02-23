@@ -2,8 +2,8 @@ extends Node2D
 
 var host: CharacterBody2D
 
-func _physics_process(delta: float) -> void:
-	$AudioStreamPlayer2D.stream_paused = host.velocity.length() <= 0
+#func _process(_delta: float) -> void:
+	#$AudioStreamPlayer2D.stream_paused = host.velocity.length() <= 0
 
 func _setup(snake: CharacterBody2D) -> void:
 	host = snake

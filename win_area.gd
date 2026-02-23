@@ -12,6 +12,9 @@ func enable() -> void:
 	enabled = true
 
 func _on_body_entered(body: Node2D) -> void:
+	if body.has_method("touch_exit_update"):
+		body.touch_exit_update(true)
+	
 	if enabled and body.has_method("_get_inputs"):
 		# Stop all movement/input
 		$"../Snake".set_physics_process(false)
@@ -22,3 +25,7 @@ func _on_body_entered(body: Node2D) -> void:
 		light.global_position = global_position
 		
 		$"../HUD".visible = false
+
+func _on_body_exited(body: Node2D) -> void:
+	if body.has_method("touch_exit_update"):
+		body.touch_exit_update(false)

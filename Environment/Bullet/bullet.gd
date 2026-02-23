@@ -8,6 +8,10 @@ func _on_body_entered(body: Node2D) -> void:
 	if body.has_method("stun"):
 		body.stun()
 
+func _on_area_shape_entered(_area_rid: RID, area: Area2D, _area_shape_index: int, _local_shape_index: int) -> void:
+	if area.has_method("flicker"):
+		area.flicker()
+
 func _on_animated_sprite_2d_animation_finished() -> void:
 	queue_free()
 
@@ -27,3 +31,6 @@ func setup(from: Vector2, to: Vector2):
 	$CPUParticles2D.angle_max = -rotation_degrees + 20
 	$CPUParticles2D.restart()
 	$CPUParticles2D.emitting = true
+	
+	$BulletFlash.restart()
+	$BulletFlash.emitting = true

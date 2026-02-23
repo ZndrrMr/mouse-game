@@ -11,8 +11,9 @@ func _process(delta: float) -> void:
 	global_position.y = anchor.y + 8* sin(t)
 
 func _on_body_entered(body: Node2D) -> void:
-	if body.has_method("_get_inputs"):
+	if body.has_method("find_cheese"):
 		$"../../..".get_cheese()
+		body.find_cheese()
 		
 		var sfx := $AudioStreamPlayer
 		sfx.play()

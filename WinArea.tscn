@@ -26,3 +26,4 @@ color = Color(0.923818, 0.86706, 0.737344, 1)
 texture = SubResource("GradientTexture2D_1vnui")
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="body_exited" from="." to="." method="_on_body_exited"]

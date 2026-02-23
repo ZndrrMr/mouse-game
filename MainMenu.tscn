@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://c4j8px1l4g02y"]
+[gd_scene load_steps=6 format=3 uid="uid://c4j8px1l4g02y"]
 
 [ext_resource type="Script" uid="uid://c7k74ndvxibjk" path="res://main_menu.gd" id="1_h7a2f"]
+[ext_resource type="Texture2D" uid="uid://dj4cjdchxh2us" path="res://RattyBusinessBG.png" id="2_iwfq2"]
 [ext_resource type="PackedScene" uid="uid://cd582ip1srg0d" path="res://fog.tscn" id="2_qoqlk"]
 [ext_resource type="FontFile" uid="uid://byicaowlbld48" path="res://m5x7.ttf" id="3_iwfq2"]
+[ext_resource type="Texture2D" uid="uid://ln8hvpi8mm1c" path="res://Title.png" id="5_iwfq2"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -20,36 +22,170 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 1)
+color = Color(0.0901961, 0.12549, 0.156863, 1)
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="CanvasModulate" type="CanvasModulate" parent="."]
+color = Color(0.521569, 0.619608, 0.721569, 1)
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("2_iwfq2")
+
+[node name="Main" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainButtons" type="VBoxContainer" parent="Main"]
 layout_mode = 1
 anchors_preset = 14
 anchor_top = 0.5
 anchor_right = 1.0
 anchor_bottom = 0.5
-offset_top = 38.5
-offset_bottom = 109.5
+offset_top = 39.0
+offset_bottom = 110.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Play" type="Button" parent="VBoxContainer"]
+[node name="Play" type="Button" parent="Main/MainButtons"]
 layout_mode = 2
 theme_override_fonts/font = ExtResource("3_iwfq2")
 text = "Start"
 
-[node name="Instructions" type="Button" parent="VBoxContainer"]
+[node name="Instructions" type="Button" parent="Main/MainButtons"]
 layout_mode = 2
 theme_override_fonts/font = ExtResource("3_iwfq2")
 text = "How to Play"
 
-[node name="Credits" type="Button" parent="VBoxContainer"]
+[node name="Credits" type="Button" parent="Main/MainButtons"]
 layout_mode = 2
 theme_override_fonts/font = ExtResource("3_iwfq2")
 text = "Credits"
 
-[node name="ColorRect" parent="." instance=ExtResource("2_qoqlk")]
-layout_mode = 1
-mouse_filter = 2
+[node name="Title" type="Sprite2D" parent="Main"]
+position = Vector2(320, 128)
+texture = ExtResource("5_iwfq2")
 
-[connection signal="pressed" from="VBoxContainer/Play" to="." method="_on_play_pressed"]
+[node name="Text" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextButtons" type="VBoxContainer" parent="Text"]
+layout_mode = 0
+offset_top = 269.0
+offset_right = 640.0
+offset_bottom = 290.0
+
+[node name="Back" type="Button" parent="Text/TextButtons"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_iwfq2")
+text = "Back"
+
+[node name="Instructions" type="GridContainer" parent="Text"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -153.5
+offset_top = -103.5
+offset_right = 153.5
+offset_bottom = 63.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/h_separation = 32
+theme_override_constants/v_separation = 16
+columns = 2
+
+[node name="Controls" type="Label" parent="Text/Instructions"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_iwfq2")
+text = "WASD: move and climb
+Space: jump, Click: shoot
+R: reload (locks movement)"
+horizontal_alignment = 1
+
+[node name="Gun" type="Label" parent="Text/Instructions"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_iwfq2")
+text = "Rely on your shotgun to
+break down wooden walls
+and/or briefly stun Bill."
+horizontal_alignment = 1
+
+[node name="Objective" type="Label" parent="Text/Instructions"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_iwfq2")
+text = "Track down 5 cheeses
+and escape the sewer, but
+watch out for Blind-Bill!"
+horizontal_alignment = 1
+
+[node name="Alert" type="Label" parent="Text/Instructions"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_iwfq2")
+text = "Firing your shotgun or
+grazing Bill's tail will
+alert him to your location."
+horizontal_alignment = 1
+
+[node name="Hide" type="Label" parent="Text/Instructions"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_iwfq2")
+text = "Hide yourself in front
+of piles of trash. You are
+safe in the shadows."
+horizontal_alignment = 1
+
+[node name="RestockAmmo" type="Label" parent="Text/Instructions"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_iwfq2")
+text = "Use ammo sparingly, but
+each cheese you find will
+earn you another round."
+horizontal_alignment = 1
+
+[node name="Credits" type="Label" parent="Text"]
+visible = false
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = 128.0
+offset_top = -100.0
+offset_right = -128.0
+offset_bottom = 85.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("3_iwfq2")
+text = "Originally made for the 2025 NCSU Collegiate Game Jam
+
+Programmers
+Joe M, Zander M
+
+Artists
+Ava K, Joe M
+
+Musician/Sound Designer
+Gio L"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="ColorRect" parent="." instance=ExtResource("2_qoqlk")]
+
+[connection signal="pressed" from="Main/MainButtons/Play" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="Main/MainButtons/Instructions" to="." method="_on_instructions_pressed"]
+[connection signal="pressed" from="Main/MainButtons/Credits" to="." method="_on_credits_pressed"]
+[connection signal="pressed" from="Text/TextButtons/Back" to="." method="_on_back_pressed"]

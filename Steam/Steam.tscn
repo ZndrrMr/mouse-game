@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3 uid="uid://cbkldjm3744y0"]
+
+[ext_resource type="Texture2D" uid="uid://jhg8apfr678j" path="res://Steam/fog.png" id="1_hakpk"]
+
+[sub_resource type="Curve" id="Curve_s3n60"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.247492, 0.145904), 0.0, 0.0, 0, 0, Vector2(0.752508, 0.145904), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 4
+
+[sub_resource type="CurveTexture" id="CurveTexture_qp4ms"]
+curve = SubResource("Curve_s3n60")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_uffd5"]
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(64, 16, 1)
+spread = 15.0
+initial_velocity_min = -15.0
+initial_velocity_max = 15.0
+gravity = Vector3(0, 0, 0)
+alpha_curve = SubResource("CurveTexture_qp4ms")
+turbulence_noise_strength = 0.2
+turbulence_influence_max = 0.3
+
+[node name="Steam" type="GPUParticles2D"]
+amount = 16
+texture = ExtResource("1_hakpk")
+lifetime = 4.0
+speed_scale = 0.5
+process_material = SubResource("ParticleProcessMaterial_uffd5")

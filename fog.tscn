@@ -1,33 +1,31 @@
-[gd_scene load_steps=6 format=3 uid="uid://cd582ip1srg0d"]
+[gd_scene load_steps=5 format=3 uid="uid://cd582ip1srg0d"]
 
-[ext_resource type="Shader" uid="uid://b1oo5miktnp70" path="res://fog.gdshader" id="1_ipjpj"]
+[ext_resource type="Script" uid="uid://c3m8454wk72ah" path="res://fog_main.gd" id="1_q764f"]
 [ext_resource type="Script" uid="uid://dj2dhsv67gn03" path="res://fog.gd" id="2_7hk2c"]
+[ext_resource type="Material" uid="uid://1jqg7p53b72o" path="res://fog.tres" id="2_q764f"]
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_ipjpj"]
-noise_type = 3
-fractal_octaves = 3
+[sub_resource type="ViewportTexture" id="ViewportTexture_7hk2c"]
+viewport_path = NodePath("SubViewport")
 
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_7hk2c"]
-width = 640
-height = 360
-seamless = true
-noise = SubResource("FastNoiseLite_ipjpj")
+[node name="ColorRect" type="CanvasLayer"]
+script = ExtResource("1_q764f")
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_7hk2c"]
-shader = ExtResource("1_ipjpj")
-shader_parameter/fog_color = Color(0, 0, 0, 1)
-shader_parameter/world_offset = Vector2(0, 0)
-shader_parameter/radiusf = 0.2851
-shader_parameter/radius_offset = 0.1
-shader_parameter/edge_softness = 1.011
-shader_parameter/animation_speed = 0.05
-shader_parameter/noise_texture = SubResource("NoiseTexture2D_7hk2c")
+[node name="SubViewport" type="SubViewport" parent="."]
+disable_3d = true
+transparent_bg = true
+size = Vector2i(320, 180)
 
-[node name="ColorRect" type="ColorRect" groups=["fog"]]
-material = SubResource("ShaderMaterial_7hk2c")
+[node name="ColorRect" type="ColorRect" parent="SubViewport" groups=["fog"]]
+material = ExtResource("2_q764f")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("2_7hk2c")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+offset_right = 640.0
+offset_bottom = 360.0
+mouse_filter = 2
+texture = SubResource("ViewportTexture_7hk2c")

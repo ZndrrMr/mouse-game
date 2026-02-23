@@ -15,9 +15,11 @@ const JUMP_BUFFER_DUR = 0.1
 const MAX_SPEED = 120
 const MAX_FALL = 420
 
-const LADDER_SPEED = 90
+const LADDER_SPEED = 60
 
-const MAX_AMMO = 1
+const MAX_AMMO = 2
+
+const GUN_CLIMB_OFF = [3, 2, 1, 0, 0, 3, 2, 1, 0, 0]
 
 # setup variables
 var coyote_time_timer: float = 0
@@ -25,7 +27,7 @@ var jump_buffer_timer: float = 0
 var ladder_cooldown: bool = true
 
 var ammo: int = MAX_AMMO
-var ammo_store: int = 1
+var ammo_store: int = 2
 
 var speed: float = 0
 var friction: float = 0
@@ -37,6 +39,16 @@ var player_hidden: bool = false
 var grounded: bool = false
 
 var bullet: PackedScene = preload("res://Environment/Bullet/bullet.tscn")
+
+@onready var tips = $"../HUD/Tips"
+var tipsTime : float = 1.5
+var tipShoot : float = 0.0 
+var tipReload : float = 0.0
+var tipReloadFull : float = 0.0
+var tipReloadStill : float = 0.0
+var tipFound : float = 0.0
+var cheeseesFound : int = 0
+var touchingExit : bool = false
 
 # Input tracking
 var input_dir_h : float = 0.0
@@ -66,7 +78,7 @@ func _ready() -> void:
 	call_deferred("update_hud")
 
 func update_hud():
-	$"../HUD".update_ammo(ammo, ammo_store + ammo)
+	$"../HUD".update_ammo(ammo, ammo_store)
 
 func _physics_process(delta: float) -> void:
 	_get_inputs()
@@ -86,6 +98,8 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	animate()
 	sound_blend()
+	
+	_update_tips(delta)
 	
 	var shake_dist = 500
 	var dist = (global_position - $"../Snake".global_position).length()
@@ -152,7 +166,7 @@ func _state_free(delta: float) -> void:
 	shoot()
 	reload()
 
-func _state_ladder(delta: float) -> void:
+func _state_ladder(_delta: float) -> void:
 	# MOVE
 	if input_dir_v != 0:
 		velocity.y = LADDER_SPEED * input_dir_v
@@ -161,12 +175,19 @@ func _state_ladder(delta: float) -> void:
 	if !get_ladder(global_position + Vector2(0, input_dir_v) * 16):
 		velocity.y = 0
 	
+	shoot()
+	
 	# JUMP OFF
 	if jump_press or (is_on_floor() and input_dir_v > 0):
 		change_state(PlayerStates.FREE)
 		ladder_cooldown = false
 		if input_dir_v <= 0 and !is_on_floor():
 			jump(JUMP_VELOCITY)
+	
+	if reload_press:
+		tipReloadStill = tipsTime
+		tipReloadFull = 0.0
+		tipReload = 0.0
 
 func jump(jump_vel: float) -> void:
 	jump_buffer_timer = 0
@@ -175,25 +196,30 @@ func jump(jump_vel: float) -> void:
 	$Footstep.play()
 	
 
-func get_ladder(position: Vector2) -> bool:
+func get_ladder(my_position: Vector2) -> bool:
 	var layer: TileMapLayer = $"../Ladders" as TileMapLayer
-	var cell: Vector2i = layer.local_to_map(layer.to_local(position))
+	var cell: Vector2i = layer.local_to_map(layer.to_local(my_position))
 	return layer.get_cell_source_id(cell) != -1
 
-func shoot() -> void:
-	if shoot_press and ammo > 0:
-		ammo -= 1
-		
-		update_hud()
-		
-		var b := bullet.instantiate()
-		get_tree().root.add_child(b)
-		
-		b.setup(global_position + $Gun.position, get_global_mouse_position())
-		
-		$"../Snake".start_chase()
-		$"../Camera2D".start_shake(20, 10)
-		$ShotgunSFX.play()
+func shoot() -> bool:
+	if shoot_press:
+		if ammo > 0:
+			ammo -= 1
+			
+			update_hud()
+			
+			var b := bullet.instantiate()
+			get_tree().root.add_child(b)
+			
+			b.setup(global_position + $Gun.position, get_global_mouse_position())
+			
+			$"../Snake".start_chase()
+			$"../Camera2D".start_shake(20, 10)
+			$ShotgunSFX.play()
+			return true
+		else:
+			tipShoot = tipsTime
+	return false
 
 func _state_reload() -> void:
 	if jump_press:
@@ -201,17 +227,28 @@ func _state_reload() -> void:
 		jump(JUMP_VELOCITY)
 
 func can_reload() -> bool:
-	return !(abs(input_dir_h) > 0 or abs(input_dir_v) > 0 or shoot_press or jump_press or !is_on_floor())
+	return !(state != state_map[PlayerStates.FREE] or !is_on_floor())
 
 func reload() -> void:
 	if reload_press and can_reload():
 		if ammo < MAX_AMMO and ammo_store > 0:
 			change_state(PlayerStates.RELOAD)
 			velocity = Vector2.ZERO
-			$AnimatedSprite2D.play("Reload")
+			if is_hidden():
+				$AnimatedSprite2D.play("ReloadHidden")
+			else:
+				$AnimatedSprite2D.play("Reload")
+		elif ammo >= MAX_AMMO:
+			tipReloadFull = tipsTime
+			tipReload = 0.0
+			tipReloadStill = 0.0
+		elif ammo_store <= 0:
+			tipReload = tipsTime
+			tipReloadFull = 0.0
+			tipReloadStill = 0.0
 
 func is_hidden() -> bool:
-	return player_hidden and velocity.length() < 1 and state == state_map[PlayerStates.FREE]
+	return player_hidden # and state == state_map[PlayerStates.FREE]
 
 func set_hidden(value: bool) -> void:
 	player_hidden = value
@@ -228,29 +265,42 @@ func animate() -> void:
 	var anim: AnimatedSprite2D = $AnimatedSprite2D
 	var gun: AnimatedSprite2D = $Gun
 	
-	if is_hidden():
-		gun.animation = "Dark"
+	var mouse_pos = get_global_mouse_position()
+	var angle_to_mouse = global_position.angle_to_point(mouse_pos)
+	
+	gun.position = Vector2(mouse_direction * 9, -3)
+	gun.rotation = angle_to_mouse
+	
+	if mouse_direction < 0:
+		gun.flip_v = true
 	else:
-		gun.animation = "Light"
+		gun.flip_v = false
+	
+	if state == state_map[PlayerStates.LADDER]:
+		gun.animation = "Ladder"
+	else:
+		if is_hidden():
+			gun.animation = "Dark"
+		else:
+			gun.animation = "Light"
 	
 	if state == state_map[PlayerStates.FREE]:
 		gun.visible = true
-		
 		anim.flip_h = mouse_direction > 0
-		gun.position = Vector2(mouse_direction * 9, -3)
-		
-		var mouse_pos = get_global_mouse_position()
-		var angle_to_mouse = global_position.angle_to_point(mouse_pos)
-		gun.rotation = angle_to_mouse
-		
-		if mouse_direction < 0:
-			gun.flip_v = true
-		else:
-			gun.flip_v = false
 		
 		if is_on_floor():
 			if abs(input_dir_h) > 0:
-				anim.play("Run")
+				if is_hidden():
+					if anim.animation == "Run":
+						anim.animation = "RunHidden"
+					else:
+						anim.play("RunHidden")
+				else:
+					if anim.animation == "RunHidden":
+						anim.animation = "Run"
+					else:
+						anim.play("Run")
+				
 				if mouse_direction * input_dir_h < 0:
 					anim.play_backwards()
 			else:
@@ -260,15 +310,24 @@ func animate() -> void:
 					anim.play("Idle")
 		else:
 			if velocity.y <= 0:
-				anim.play("Jump")
+				if is_hidden():
+					anim.play("JumpHidden")
+				else:
+					anim.play("Jump")
 			else:
-				anim.play("Fall")
+				if is_hidden():
+					anim.play("FallHidden")
+				else:
+					anim.play("Fall")
 	elif state == state_map[PlayerStates.LADDER]:
 		gun.visible = false
-		
 		anim.flip_h = false
+		gun.visible = true					# comment / uncomment...
+		anim.flip_h = mouse_direction <= 0	# ...these two lines
+		gun.position.y = -GUN_CLIMB_OFF[$AnimatedSprite2D.frame] - 1
+		
 		if abs(input_dir_v) > 0:
-			anim.play("Climb")
+			anim.play("ClimbAlt")			# change between Climb / ClimbAlt
 			if input_dir_v > 0:
 				anim.play_backwards()
 		else:
@@ -281,10 +340,10 @@ func _on_animated_sprite_2d_frame_changed() -> void:
 	if sprite.animation == "Run" and (sprite.frame == 1 or sprite.frame == 5):
 		$Footstep.pitch_scale = randf_range(0.9, 1.1)
 		$Footstep.play()
-	elif sprite.animation == "Climb" and sprite.frame == 1:
+	elif (sprite.animation == "Climb" || sprite.animation == "ClimbAlt") and sprite.frame == 1:
 		$LadderFootstep.pitch_scale = randf_range(0.9, 1.1)
 		$LadderFootstep.play()
-	elif sprite.animation == "Reload":
+	elif sprite.animation == "Reload" || sprite.animation == "ReloadHidden":
 		match sprite.frame:
 			5:
 				$Reload2.play()
@@ -294,9 +353,55 @@ func _on_animated_sprite_2d_frame_changed() -> void:
 
 func _on_animated_sprite_2d_animation_finished() -> void:
 	var sprite: AnimatedSprite2D = $AnimatedSprite2D
-	if sprite.animation == "Reload":
-		ammo += 1
-		ammo_store -= 1
+	if sprite.animation == "Reload" || sprite.animation == "ReloadHidden":
+		var reload_amt = min(ammo_store, MAX_AMMO - ammo)
+		ammo += reload_amt
+		ammo_store -= reload_amt
 		update_hud()
 		change_state(PlayerStates.FREE)
 		$Reload2.play()
+
+func find_cheese() -> void:
+	cheeseesFound += 1
+	tipFound = tipsTime
+
+func touch_exit_update(val : bool) -> void:
+	touchingExit = val
+
+func _update_tips(delta : float) -> void:
+	tips.visible = !tips.visible
+	
+	if tipFound > 0: tipFound -= delta
+	if tipReload > 0: tipReload -= delta
+	if tipReloadFull > 0: tipReloadFull -= delta
+	if tipReloadStill > 0: tipReloadStill -= delta
+	if tipShoot > 0: tipShoot -= delta
+	
+	if tipFound > 0:
+		if cheeseesFound < 5:
+			tips.text = "Cheese " + str(cheeseesFound) + "/5 found, +1 ammo"
+		else:
+			tips.text = "All cheese found, reach\nexit to win, +1 ammo"
+	elif tipReloadFull > 0:
+		tips.text = "Already loaded"
+	elif tipReload > 0:
+		tips.text = "Out of ammo"
+	elif tipReloadStill > 0:
+		tips.text = "Cannot reload on a ladder"
+	elif tipShoot > 0:
+		tips.text = "'R' to reload"
+	else:
+		if state == state_map[PlayerStates.FREE]:
+			if is_hidden():
+				tips.text = "Hidden"
+			else:
+				tips.text = ""
+		elif state == state_map[PlayerStates.LADDER]:
+			if cheeseesFound < 5 && touchingExit:
+				tips.text = "All cheese required to escape"
+			else:
+				tips.text = ""
+		elif state == state_map[PlayerStates.RELOAD]:
+			tips.text = "Jump to cancel reload"
+		else:
+			tips.text = ""

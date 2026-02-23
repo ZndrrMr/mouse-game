@@ -1,8 +1,9 @@
-[gd_scene load_steps=11 format=3 uid="uid://boxvw0upj2tem"]
+[gd_scene load_steps=12 format=3 uid="uid://boxvw0upj2tem"]
 
 [ext_resource type="Script" uid="uid://ddbiogg3wvd13" path="res://Environment/Bullet/bullet.gd" id="1_2dao8"]
 [ext_resource type="Texture2D" uid="uid://8bfo5fiq4b8w" path="res://Environment/Bullet/GunBlast.png" id="2_xl5qq"]
 [ext_resource type="PackedScene" uid="uid://coqgcyd453sjn" path="res://Environment/Bullet/BulletParticles.tscn" id="3_xhxbq"]
+[ext_resource type="PackedScene" uid="uid://2mo88gjseh4k" path="res://Environment/Bullet/BulletFlash.tscn" id="4_d0njx"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_xl5qq"]
 light_mode = 1
@@ -65,5 +66,8 @@ position = Vector2(64, 0)
 sprite_frames = SubResource("SpriteFrames_m7qes")
 animation = &"Blast"
 
+[node name="BulletFlash" parent="." instance=ExtResource("4_d0njx")]
+
+[connection signal="area_shape_entered" from="." to="." method="_on_area_shape_entered"]
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]

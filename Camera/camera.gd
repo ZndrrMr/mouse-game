@@ -18,7 +18,7 @@ var target: Vector2
 @onready var main_pos: Vector2 = $"../Player".global_position
 var shake_offset: Vector2 = Vector2.ZERO
 
-@onready var fog_material = $"../CanvasLayer/ColorRect".material as ShaderMaterial
+@onready var fog_material = $"../CanvasLayer/ColorRect/SubViewport/ColorRect".material as ShaderMaterial
 
 func _process(delta: float) -> void:
 	# MOVE
@@ -30,6 +30,8 @@ func _process(delta: float) -> void:
 	
 	if abs(player_ground_pos.y - player_pos.y) > 64 or player.state == player.state_map[player.PlayerStates.LADDER]:
 		target.y = player_pos.y
+		#if player.state != player.state_map[player.PlayerStates.LADDER]:
+			#main_pos.y = player_pos.y
 		player_ground_pos.y = -1000000
 	
 	if player.state == player.state_map[player.PlayerStates.FREE]:

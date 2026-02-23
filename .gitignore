@@ -2,6 +2,8 @@
 .godot/
 /android/
 
+Builds/
+
 # Godot import files
 .import/
 

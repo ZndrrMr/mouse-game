@@ -6,8 +6,8 @@ enum FogState {
 	CONST
 }
 
-const RADIUSF_OPEN: = 0.285
-const RADIUSOFF_OPEN: = 0.05
+const RADIUSF_OPEN: = 0.35
+const RADIUSOFF_OPEN: = 0.035
 
 var progress: float
 const DURATION: float = 1
@@ -32,6 +32,7 @@ func update_shader(delta: float, invert: bool) -> void:
 		final_prog = 1 - final_prog
 	
 	final_prog = smoothstep(0.0, 1.0, final_prog)
+	
 	material.set_shader_parameter("radiusf", lerp(0.0, RADIUSF_OPEN, final_prog))
 	material.set_shader_parameter("radius_offset", lerp(0.0, RADIUSOFF_OPEN, final_prog))
 

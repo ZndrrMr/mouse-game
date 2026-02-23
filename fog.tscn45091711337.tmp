@@ -1,0 +1,26 @@
+[gd_scene load_steps=4 format=3 uid="uid://cd582ip1srg0d"]
+
+[ext_resource type="Script" uid="uid://dj2dhsv67gn03" path="res://fog.gd" id="2_7hk2c"]
+[ext_resource type="Material" uid="uid://1jqg7p53b72o" path="res://fog.tres" id="2_q764f"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_7hk2c"]
+viewport_path = NodePath("SubViewport")
+
+[node name="ColorRect" type="CanvasLayer" groups=["fog"]]
+script = ExtResource("2_7hk2c")
+
+[node name="SubViewport" type="SubViewport" parent="."]
+size = Vector2i(320, 180)
+
+[node name="ColorRect" type="ColorRect" parent="SubViewport"]
+material = ExtResource("2_q764f")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="."]
+offset_right = 640.0
+offset_bottom = 360.0
+texture = SubResource("ViewportTexture_7hk2c")
